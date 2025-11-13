@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz para Mano Robótica</title>
+    <!-- Enlazamos el CSS externo -->
+    <link rel="stylesheet" href="{% static 'miapp/estilos.css' %}">>
+</head>
+<body>
+    <h1>Interfaz para Control de Mano Robótica</h1>
+    
+    <div id="robot-hand">
+        <img src="% static 'miapp/mano_robotica.jpeg' %" alt="Mano Robótica">
+    </div>
+    
+    <div id="fingers">
+        <div class="finger-container">
+            <label for="thumb">Pulgar: <span id="thumb-value">0</span></label>
+            <input type="range" id="thumb" min="0" max="100" value="0">
+        </div>
+        
+        <div class="finger-container">
+            <label for="index">Índice: <span id="index-value">0</span></label>
+            <input type="range" id="index" min="0" max="100" value="0">
+        </div>
+        
+        <div class="finger-container">
+            <label for="middle">Medio: <span id="middle-value">0</span></label>
+            <input type="range" id="middle" min="0" max="100" value="0">
+        </div>
+        
+        <div class="finger-container">
+            <label for="ring">Anular: <span id="ring-value">0</span></label>
+            <input type="range" id="ring" min="0" max="100" value="0">
+        </div>
+        
+        <div class="finger-container">
+            <label for="pinky">Meñique: <span id="pinky-value">0</span></label>
+            <input type="range" id="pinky" min="0" max="100" value="0">
+        </div>
+    </div>
+    
+    <div id="controls">
+        <button id="save">Guardar Movimiento</button>
+        <button id="repeat">Repetir Movimiento</button>
+        <button id="reset">Resetear</button>
+        <button id="stop">Detener Movimiento</button>
+    </div>
+    
+    <script>
+        const fingers = [
+            { id: 'thumb', valueElement: 'thumb-value' },
+            { id: 'index', valueElement: 'index-value' },
+            { id: 'middle', valueElement: 'middle-value' },
+            { id: 'ring', valueElement: 'ring-value' },
+            { id: 'pinky', valueElement: 'pinky-value' }
+        ];
+        
+        fingers.forEach(finger => {
+            const input = document.getElementById(finger.id);
+            const valueSpan = document.getElementById(finger.valueElement);
+            
+            input.addEventListener('input', () => {
+                valueSpan.textContent = input.value;
+            });
+        });
+        
+        document.getElementById('save').addEventListener('click', () => {
+            const positions = {};
+            fingers.forEach(finger => {
+                positions[finger.id] = document.getElementById(finger.id).value;
+            });
+            localStorage.setItem('savedPositions', JSON.stringify(positions));
+            alert('Movimiento guardado exitosamente!');
+        });
+        
+        document.getElementById('repeat').addEventListener('click', () => {
+            const savedPositions = JSON.parse(localStorage.getItem('savedPositions'));
+            if (savedPositions) {
+                fingers.forEach(finger => {
+                    const input = document.getElementById(finger.id);
+                    input.value = savedPositions[finger.id] || 0;
+                    document.getElementById(finger.valueElement).textContent = input.value;
+                });
+                alert('Movimiento repetido!');
+            } else {
+                alert('No hay movimiento guardado.');
+            }
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+            fingers.forEach(finger => {
+                const input = document.getElementById(finger.id);
+                input.value = 0;
+                document.getElementById(finger.valueElement).textContent = 0;
+            });
+            alert('Movimiento reseteado!');
+        });
+        
+        document.getElementById('stop').addEventListener('click', () => {
+            fingers.forEach(finger => {
+                const input = document.getElementById(finger.id);
+                input.value = 0;
+                document.getElementById(finger.valueElement).textContent = 0;
+            });
+            alert('Movimiento detenido y reseteado!');
+        });
+    </script>
+</body>
+</html>
